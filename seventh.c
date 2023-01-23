@@ -20,7 +20,7 @@
 void help();
 void cat(char * , char *);
 int checking_validation(char *);
-void create_file(char *);
+void create_file(char * , char *);
 void cd(char *);
 
 int main() {    
@@ -62,17 +62,31 @@ int main() {
             }
             // printf("%d" , checking_validation(val));
             char *file_name;
+            char *file_name2;
             int slash = '/';
             file_name = strrchr(address, slash);
-            file_name = strrchr(address, slash);
-
-            cat(file_name , address);
+            file_name2 = strtok(file_name, "/");
+            if(address[0] == '\"'){
+                file_name2[strlen(file_name2)-1] = '\0';
+            }
+            // printf("12345%s\n" , file_name2);
+            cat(file_name2 , address);
         }
         else if(strcmp(cmd , "CRF") == 0){
             if(checking_validation(val) == 1){
                 continue;
             }
-            create_file(address);
+            char *file_name;
+            char *file_name2;
+            int slash = '/';
+            file_name = strrchr(address, slash);
+            file_name2 = strtok(file_name, "/");
+            if(address[0] == '\"'){
+                file_name2[strlen(file_name2)-1] = '\0';
+            }
+            create_file(address , file_name2);
+            printf("File created successfully.\n");
+            printf("\n--------------------\n");
         }
         else{
             printf("Command does not exist");
@@ -113,32 +127,44 @@ void cat(char *file_name , char *address){
         if(strcmp(token1 , "root") == 0){
             while(token1 != NULL) {
                 chdir("..");
-                token1 = strtok(NULL, " / ");
+                token1 = strtok(NULL, "/");
             }
         }
     }
     const char *temp;
     char *temp2;
-    char *temp3;
+    int counter_address = 0;
+    char backup_address[10000];
+    strcpy(backup_address , address);
+    // printf("%s\n",backup_address);
+    char *temp3 = strtok(backup_address, "/");
+    while(temp3 != NULL){
+        counter_address++;
+        temp3 = strtok(NULL, "/");
+    }
+    // printf("%d\n" , counter_address);
     char *token2 = strtok(address, "/");
-    printf("%s\n" , token2);
-    while (token2 != NULL) {
-        if(strcmp(token2 , " \"") == 0){
+    // printf("%s\n" , token2);
+    while(token2 != NULL){
+        if(strcmp(token2 , "\"") == 0){ // strcmp("/"token2"\"" , "\"") == 0
             temp = token2;
             token2 = strtok(NULL, "/");
-            printf("\"\"%s\n" , token2);
+            // printf("\"\"%s\n" , token2);
+            // n++;
         }
         else{
-            int a = chdir(token2);
-            printf("%d" , a);
-            printf("%s" , file_name);
+            const int a = chdir(token2);
+            // printf("$$$%s\n" , token2);
+            // printf("%d\n" , a);
+            // printf("%s\n" , file_name);
             if(strcmp(token2 , file_name) == 0){
                 FILE * fPtr; 
 
                 fPtr = fopen(file_name , "r");
-                char data[1000];
+                // printf("%d\n" , fPtr);
+                char data[100000];
                 if(fPtr != NULL){
-                    while (fgets(data , 1000 , fPtr)){
+                    while (fgets(data , 100000 , fPtr)){
                         printf("%s" , data);
                     }
                 }
@@ -150,10 +176,12 @@ void cat(char *file_name , char *address){
                 break;
             }
             else if(a == 0){
-                printf("%s\n" , token2);
+                // printf("%s\n" , token2);
                 chdir(token2);
+                token2 = strtok(NULL, "/");
             }
             else{
+                // printf("%s\n",token2);
                 printf("There is not such a directory or file\n");
                 break;
             }
@@ -162,80 +190,84 @@ void cat(char *file_name , char *address){
     
 }
 
-void create_file(char *address){
+void create_file(char *address , char *file_name){
     char buff[FILENAME_MAX];
     GetCurrentDir( buff, FILENAME_MAX );
     char* token1 = strtok(buff, " / ");
-    printf("%s\n" , address);
+    // printf("%s\n" , address);
     while(token1 != NULL) {
         token1 = strtok(NULL, " / ");
         if(strcmp(token1 , "root") == 0){
             while(token1 != NULL) {
-                printf("%s\n" , token1);
+                // printf("%s\n" , token1);
                 chdir("..");
                 token1 = strtok(NULL, "/");
             }
         }
     }
     GetCurrentDir( buff, FILENAME_MAX );
-    printf("%s\n" , buff);
-    printf("%s\n" , address);
+    // printf("%s\n" , buff);
+    // printf("%s\n" , address);
     const char *temp;
     char *temp2;
     char *temp3;
     char *token2 = strtok(address, "/");
-    printf("%s\n" , token2);
+    // printf("%s\n" , token2);
     if(strcmp(token2 , "\"") == 0){
-        printf("ASD");
+        // printf("ASD");
         while (token2 != NULL) {
             if(strcmp(token2 , "\"") == 0){
                 temp = token2;
                 token2 = strtok(NULL, "/");
-                printf("\"\"%s\n" , token2);
+                // printf("\"\"%s\n" , token2);
+            }
+            else if(strcmp(token2 , file_name) == 0){
+                FILE * a;
+                a = fopen(file_name , "w");
+                fclose(a);
+                return;
             }
             else{
                 cd(token2);
                 temp = token2;
                 token2 = strtok(NULL, "/");
-                printf("%s\n" , token2);
+                // printf("%s\n" , token2);
             }
         }
-        chdir("..");
-        rmdir(temp);
-        // for(int j = 0 ; j < 9 ; j++){
-        //     printf("%c\n" , temp[j]);
+        // chdir("..");
+        // rmdir(temp);
+        // // for(int j = 0 ; j < 9 ; j++){
+        // //     printf("%c\n" , temp[j]);
+        // // }
+        // // for(int j = 0 ; j < 8  ; j++){
+        // //     temp2[j] = temp[j];
+        // //     temp2[j+1]='\0';
+        // //     printf("%c\n" , temp2[j]);
+        // // }
+        // int i = 0;
+        // while(temp[i] != '\"'){
+        //     temp2[i] = temp[i];
+        //     temp2[i+1]='\0';
+        //     // printf("%c\n" , temp2[i]);
+        //     i++;
         // }
-        // for(int j = 0 ; j < 8  ; j++){
-        //     temp2[j] = temp[j];
-        //     temp2[j+1]='\0';
-        //     printf("%c\n" , temp2[j]);
-        // }
-        int i = 0;
-        while(temp[i] != '\"'){
-            temp2[i] = temp[i];
-            temp2[i+1]='\0';
-            // printf("%c\n" , temp2[i]);
-            i++;
-        }
-        // printf("%s\n" , temp);
-        // printf("%s\n" , temp2);
-        // printf("%s\n" , temp3);
-        FILE * a;
-        a = fopen(temp2 , "w");
-        fclose(a);
+        // // printf("%s\n" , temp);
+        // // printf("%s\n" , temp2);
+        // // printf("%s\n" , temp3);
+        // FILE * a;
+        // a = fopen(temp2 , "w");
+        // fclose(a);
     }
     else {
     // const char *temp;
     // char *token2 = strtok(address, " / ");
-    while (token2 != NULL) {
+    while (strcmp(token2 , file_name)) {
         cd(token2);
         temp = token2;
         token2 = strtok(NULL, " / ");
     }
-    chdir("..");
-    rmdir(temp);
     FILE * a;
-    a = fopen(temp , "w");
+    a = fopen(file_name , "w");
     fclose(a);
     }
 }
