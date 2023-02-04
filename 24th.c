@@ -172,6 +172,10 @@ int main() {
                 printf("|\n");
                 tree(buff, 0 , depth);
             }
+            else if(depth == 0){
+                printf("your current folder with %d depth is : \n%s\n" , depth , folder);
+                continue;
+            }
             else if(depth == -1){
                 printf("your current folder with %d depth is : \n%s\n" , depth , folder);
                 printf("|\n");
@@ -1368,15 +1372,18 @@ void tree(char *basePath, const int root , int depth)
     {
         if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0)
         {
-            for (i=0; i<root-1; i++) 
-            {
-                printf("──");
-
-            }
             if(dp->d_name[0] != '.'){
-                printf("└──");
-                printf("──%s\n", dp->d_name);
+                for (i=0; i<root; i++) 
+                {
+                    if (i%2 == 0 || i == 0)
+                        printf("||");
+                    else
+                        printf(" ");
+
+                }
             }
+            if(dp->d_name[0] != '.')
+                printf("└──>>%s\n", dp->d_name);
             strcpy(path, basePath);
             strcat(path, "/");
             strcat(path, dp->d_name);
@@ -1402,15 +1409,18 @@ void tree_all(char *basePath, const int root){
     {
         if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0)
         {
-            for (i=0; i<root-1; i++) 
-            {
-                printf("──");
-
-            }
             if(dp->d_name[0] != '.'){
-                printf("└──");
-                printf("──%s\n", dp->d_name);
+                for (i=0; i<root; i++) 
+                {
+                    if (i%2 == 0 || i == 0)
+                        printf("||");
+                    else
+                        printf(" ");
+
+                }
             }
+            if(dp->d_name[0] != '.')
+                printf("└──>>%s\n", dp->d_name);
             strcpy(path, basePath);
             strcat(path, "/");
             strcat(path, dp->d_name);
@@ -1621,6 +1631,8 @@ void find(){
     char matn[1000];
     counters = 0;
     scanf("%s" , str);
+    int x ;
+    int star = 0;
     if(strcmp(str , "--str") != 0){
         char chert[1000];
         gets(chert);
@@ -1634,7 +1646,7 @@ void find(){
             Have_Space = 1;
             matn[0] = c;
             c = getchar();
-            int x = 1;
+            x = 1;
             while(c != ' '){
                 matn[x] = c;
                 c = getchar();
@@ -1643,13 +1655,14 @@ void find(){
         }
         else{
             Have_Space = 0;
-            int x = 0;
+            x = 0;
             while(1){
                 scanf("%c" , &matn[x]);
                 if(matn[x] == '-'){
                     if(matn[x-1] == ' '){
                         if(matn[x-2] == '\"'){
                             matn[x-2] = '\0';
+                            x -= 2;
                             break;
                         }
                     }
@@ -1657,6 +1670,16 @@ void find(){
                 x++;
             }           
         }
+        if(matn[0] == '\\' && matn[1] == '*'){
+            star = 1;
+            for(int j = 0 ; j < 2 ; j++){
+                for(int i = 0 ; i < x ; i++){
+                    matn[i] = matn[i+1];
+                    matn[i+1] = '\0';
+                }
+            }
+        }
+        printf("text is : %s\n" , matn);
         char filestr[20] ="1234567890";
         if(Have_Space == 0){
             filestr[0] = '-';
@@ -1747,19 +1770,32 @@ void find(){
                             printf("File doesn't exist\n");
                             return;
                         }
-                        char* c;
-                        char data[1000];
-                        c = fgets(data , 1000 , roya_jafari);
-                        while(c != NULL){
-                            if(strstr(data , matn) != NULL){
-                                counters++;
-                            }
-                            c = fgets(data , 1000 , roya_jafari);
+                        fseek(roya_jafari, 0, SEEK_END); 
+                        int size_of_file = ftell(roya_jafari); 
+                        fseek(roya_jafari, 0, SEEK_SET); 
+                        char *data = (char *)malloc(size_of_file*sizeof(int)); 
+                        int char_file = 0;
+                        char_file = fgetc(roya_jafari);
+                        for(int j = 0 ; char_file != EOF ; j++){
+                            data[j] = char_file;
+                            char_file = fgetc(roya_jafari);
                         }
-                        // if(counters == 0){
-                        //     printf("-1\n");
-                        //     return;
-                        // }
+                        char *jaei_ke_behesh_mirese = strstr(data , matn);
+                        if(jaei_ke_behesh_mirese == NULL){
+                            printf("0\n");
+                            return;
+                        }
+                        while(jaei_ke_behesh_mirese - data >= 0){
+                            while(jaei_ke_behesh_mirese != NULL){
+                                if((*(jaei_ke_behesh_mirese - 1) == ' ' || *(jaei_ke_behesh_mirese - 1) == '\n' || *(jaei_ke_behesh_mirese - 1) == NULL) ){
+                                    if(*(jaei_ke_behesh_mirese + x) == ' ' || *(jaei_ke_behesh_mirese + x) == '\n' || *(jaei_ke_behesh_mirese + x) == EOF ){
+                                        counters++;
+                                    }
+                                }
+                                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                            }
+                            
+                        }
                         printf("%d\n" , counters);
                     }
                     else if(find_flag == 2){
@@ -1792,15 +1828,32 @@ void find(){
                             char_file = fgetc(roya_jafari);
                         }
                         // printf("%s\n" , data);
-                        char *jaei_ke_behesh_mirese;
-                        jaei_ke_behesh_mirese = strstr(data , matn);
+                        char *jaei_ke_behesh_mirese = strstr(data , matn);
                         if(jaei_ke_behesh_mirese == NULL){
                             printf("-1\n");
                             return;
                         }
-                        for(int q = 0 ; q < at - 1 ; q++){
+                        int q = 0;
+                        while(jaei_ke_behesh_mirese != NULL && q < at){
+                            if((*(jaei_ke_behesh_mirese - 1) == ' ' || *(jaei_ke_behesh_mirese - 1) == '\n' || *(jaei_ke_behesh_mirese - 1) == NULL) ){
+                                if(*(jaei_ke_behesh_mirese + x) == ' ' || *(jaei_ke_behesh_mirese + x) == '\n' || *(jaei_ke_behesh_mirese + x) == EOF ){
+                                    q++;
+                                    if(q == at) break;
+                                }
+                            }
+                            if(jaei_ke_behesh_mirese == NULL){
+                                printf("-1\n");
+                                return;
+                            }
                             jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
                         }
+                        if(jaei_ke_behesh_mirese - data < 0){
+                            printf("-1\n");
+                            return;
+                        }
+                        // for(int q = 0 ; q < at - 1 ; q++){
+                        //     jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                        // }
                         printf("%d\n" , jaei_ke_behesh_mirese - data);
                     }
                     else if(find_flag == 3){
@@ -1834,6 +1887,22 @@ void find(){
                         // printf("%s\n" , data);
                         char *jaei_ke_behesh_mirese = strstr(data , matn);
                         if(jaei_ke_behesh_mirese == NULL){
+                            printf("-1\n");
+                            return;
+                        }
+                        while(jaei_ke_behesh_mirese != NULL){
+                            if((*(jaei_ke_behesh_mirese - 1) == ' ' || *(jaei_ke_behesh_mirese - 1) == '\n' || *(jaei_ke_behesh_mirese - 1) == NULL) ){
+                                if(*(jaei_ke_behesh_mirese + x) == ' ' || *(jaei_ke_behesh_mirese + x) == '\n' || *(jaei_ke_behesh_mirese + x) == EOF ){
+                                    break;
+                                }
+                            }
+                            if(jaei_ke_behesh_mirese == NULL){
+                                printf("-1\n");
+                                return;
+                            }
+                            jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                        }
+                        if(jaei_ke_behesh_mirese - data < 0){
                             printf("-1\n");
                             return;
                         }
@@ -1876,16 +1945,34 @@ void find(){
                             char_file = fgetc(roya_jafari);
                         }
                         // printf("%s\n" , data);
-                        char *jaei_ke_behesh_mirese;
-                        jaei_ke_behesh_mirese = strstr(data , matn);
+                        char *jaei_ke_behesh_mirese = strstr(data , matn);
                         if(jaei_ke_behesh_mirese == NULL){
                             printf("-1\n");
                             return;
                         }
+                        int s = 0;
                         while(jaei_ke_behesh_mirese != NULL){
-                            printf("%d\n" , jaei_ke_behesh_mirese - data);
+                            if((*(jaei_ke_behesh_mirese - 1) == ' ' || *(jaei_ke_behesh_mirese - 1) == '\n' || *(jaei_ke_behesh_mirese - 1) == NULL) ){
+                                if(*(jaei_ke_behesh_mirese + x) == ' ' || *(jaei_ke_behesh_mirese + x) == '\n' || *(jaei_ke_behesh_mirese + x) == EOF ){
+                                    printf("%d\n" , jaei_ke_behesh_mirese - data);
+                                    s = 1;
+                                }
+                            }
+                            if(jaei_ke_behesh_mirese == NULL){
+                                if(s == 0){
+                                    printf("-1\n");
+                                }
+                                return;
+                            }
                             jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
                         }
+                        if(jaei_ke_behesh_mirese - data < 0){
+                            if(s == 0){
+                                printf("-1\n");
+                            }
+                            return;
+                        }
+                        
                     }
                 }
                 else{
@@ -2013,13 +2100,29 @@ void find(){
                     data[j] = char_file;
                     char_file = fgetc(roya_jafari);
                 }
-                // printf("%s\n" , data);
                 char *jaei_ke_behesh_mirese = strstr(data , matn);
                 if(jaei_ke_behesh_mirese == NULL){
                     printf("-1\n");
                     return;
                 }
+                while(jaei_ke_behesh_mirese != NULL){
+                    if((*(jaei_ke_behesh_mirese - 1) == ' ' || *(jaei_ke_behesh_mirese - 1) == '\n' || *(jaei_ke_behesh_mirese - 1) == NULL) ){
+                        if(*(jaei_ke_behesh_mirese + x) == ' ' || *(jaei_ke_behesh_mirese + x) == '\n' || *(jaei_ke_behesh_mirese + x) == EOF ){
+                            break;
+                        }
+                    }
+                    if(jaei_ke_behesh_mirese == NULL){
+                        printf("-1\n");
+                        return;
+                    }
+                    jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                }
+                if(jaei_ke_behesh_mirese - data < 0){
+                    printf("-1\n");
+                    return;
+                }
                 printf("%d\n" , jaei_ke_behesh_mirese - data);
+        
             }
         }
     }
