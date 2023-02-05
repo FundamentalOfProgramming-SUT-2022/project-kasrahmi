@@ -78,7 +78,7 @@ int main() {
         if(strcmp(cmd , "HELP") == 0) {
             help();
         }
-        else if(strcmp(cmd , "CAT") == 0){
+        else if(strcmp(cmd , "cat") == 0){
             scanf("%s" , val);
             scanf(" %[^\n]%*c" , address);
             if(checking_validation(val) == 1){
@@ -92,7 +92,7 @@ int main() {
             filename(address , file_name2);
             cat(file_name2 , address);
         }
-        else if(strcmp(cmd , "CRF") == 0){
+        else if(strcmp(cmd , "createfile") == 0){
             scanf("%s" , val);
             scanf(" %[^\n]%*c" , address);
             if(checking_validation(val) == 1){
@@ -107,35 +107,35 @@ int main() {
             create_file(address , file_name2);
             printf("\n--------------------\n");
         }
-        else if(strcmp(cmd,"INF") == 0){
+        else if(strcmp(cmd,"insert") == 0){
             scanf("%s" , val);
             if(checking_validation(val) == 1){
                 continue;
             }
             insert();
         }
-        else if(strcmp(cmd , "RMV") == 0){
+        else if(strcmp(cmd , "remove") == 0){
             scanf("%s" , val);
             if(checking_validation(val) == 1){
                 continue;
             }
             remove_file();
         }
-        else if(strcmp(cmd , "CPY") == 0){
+        else if(strcmp(cmd , "copy") == 0){
             scanf("%s" , val);
             if(checking_validation(val) == 1){
                 continue;
             }
             copy_file();
         }
-        else if(strcmp(cmd , "CUT") == 0){
+        else if(strcmp(cmd , "cut") == 0){
             scanf("%s" , val);
             if(checking_validation(val) == 1){
                 continue;
             }
             cut();
         }
-        else if(strcmp(cmd , "PST") == 0){
+        else if(strcmp(cmd , "paste") == 0){
             scanf("%s" , val);
             if(checking_validation(val) == 1){
                 continue;
@@ -219,11 +219,21 @@ int checking_validation(char * val){
 }
 
 void help(){
-    printf("Here is a list of commands you can use : \n");
-    printf("-CAT = print what is in a file\n");
-    printf("-CRF = create a file\n");
-    printf("-INF = insert a file\n");
-    printf("-PLF = print list of files\n");
+    printf("-replace            = replace an string of a file with another string\n");
+    printf("-grep               = print lines of files which contain an string\n");
+    printf("-tree               = show directories and files of a folder\n");
+    printf("-compare            = compare lines of two given files\n");
+    printf("-find               = find an string in a file\n");
+    printf("-cat                = print what is in a file\n");
+    printf("-auto_indent        = closing pairs\n");
+    printf("-createfile         = create a file\n");
+    printf("-insert             = insert a file\n");
+    printf("-remove\n");
+    printf("-copy\n");
+    printf("-cut\n");
+    printf("-paste\n");
+    printf("-undo\n");
+
     printf("--------------------\n");
 }
 
@@ -375,7 +385,6 @@ int count_char_word(char *file_name , int pos1 , int pos2){
     char c ;
     char q;
     counter_new_LINE = 0;
-  
     fp = fopen(file_name, "r");
     if (fp == NULL) {
         printf("Could not open file %s\n",file_name);
@@ -631,15 +640,15 @@ void directory(char *dir1 , char **dir2){
     }
     while(flag == 0){
         scanf("%c" , &c);
-        // printf("c is %c\n" , c);
+        if(Have_Space == 1 && c == ' '){
+            dir1[i] = '\0' ; 
+            flag = 1;
+            break;
+        }
         if(c != '\"' && c != '\n' && c != '-'){
             dir1[i] = c; 
             dir1[i + 1] = '\0';
             i++ ; 
-        }
-        if(Have_Space == 1 && c == ' '){
-            dir1[i] = '\0' ; 
-            flag = 1;
         }
         if(c == '-'){
             if(dir1[i - 1] == ' '){
@@ -1183,30 +1192,30 @@ void compare(){
     char *dir_file2_2[100];
     // getchar();
     dir_compare(dir_file1_1 , dir_file1_2);
-    printf("chera\n");
-    for(int i = 0 ; i < len  ; i++)
-        printf("%s\n" , dir_file1_2[i]);
+    // printf("chera\n");
+    // for(int i = 0 ; i < len  ; i++)
+    //     printf("%s\n" , dir_file1_2[i]);
     go_to_root();
     go_to_directory(dir_file1_2);
     say_my_dir();
     count_char_word(dir_file1_2[len - 1] , 0 , 0);
     line_first_file = counter_new_LINE;
-    printf("%d\n" , line_first_file);
+    // printf("%d\n" , line_first_file);
     FILE * first;
     first = fopen(dir_file1_2[len - 1] , "r");
     if(first == NULL){
         printf("File does not exist\n");
         return;
     }
-    printf("file opened\n");
+    // printf("file opened\n");
     dir_compare(dir_file2_1 , dir_file2_2);
-    for(int i = 0 ; i < len ; i++)
-        printf("%s\n" , dir_file2_2[i]);
+    // for(int i = 0 ; i < len ; i++)
+    //     printf("%s\n" , dir_file2_2[i]);
     go_to_root();
     go_to_directory(dir_file2_2);
     say_my_dir();
     count_char_word(dir_file2_2[len - 1] , 0 , 0);
-    printf("your file name is : %s\n" , dir_file2_2[len - 1]);
+    // printf("your file name is : %s\n" , dir_file2_2[len - 1]);
     line_second_file = counter_new_LINE;
     // printf("%d\n" , line_second_file);
     FILE * second;
@@ -1215,7 +1224,7 @@ void compare(){
         printf("File does not exist\n");
         return;
     }
-    printf("file opened\n");
+    // printf("file opened\n");
     fseek(first, 0, SEEK_END); 
     int size_of_file1 = ftell(first); 
     fseek(first, 0, SEEK_SET); 
@@ -1301,24 +1310,25 @@ void dir_compare(char *dir1 , char **dir2){
     Have_Space = 0;
     char c;
     scanf("%c" , &c);
-    printf("c is %c\n" , c);
+    // printf("c is %c\n" , c);
     if(c == ' ') c = getchar();
     if(c != '\"' ) {
         Have_Space = 1;
     }
-    while(1){
+    if(c != 'r')
         scanf("%c" , &c);
+    while(1){
+        if(Have_Space == 1 && c == ' '){
+            dir1[i] = '\0' ; 
+            break;
+        }
         if(c != '\"' && c != '\n' && c != '-'){
             dir1[i] = c; 
             dir1[i + 1] = '\0';
             i++ ; 
         }
-        if(Have_Space == 1 && c == ' '){
-            dir1[i] = '\0' ; 
-            break;
-        }
         if(c == '/'){
-            printf("inja %c\n" , dir1[i - 2]);
+            // printf("inja %c\n" , dir1[i - 2]);
             if(dir1[i - 2] == ' '){
                 if(Have_Space == 1 && dir1[i - 3] == '\"'){
                     dir1[i - 3] = '\0';
@@ -1331,7 +1341,7 @@ void dir_compare(char *dir1 , char **dir2){
             } 
         }
         if(c == '/'){
-            printf("inja %c\n" , dir1[i - 2]);
+            // printf("inja %c\n" , dir1[i - 2]);
             if(dir1[i - 2] == '\"'){
                 if(dir1[i - 3] == ' '){
                     if(Have_Space == 1 && dir1[i - 4] == '\"'){
@@ -1348,6 +1358,7 @@ void dir_compare(char *dir1 , char **dir2){
         if(c == '\n') {
             break;;
         }
+        scanf("%c" , &c);
     }
     char *token = strtok(dir1 , "/");
     int x = 0;
@@ -1869,7 +1880,6 @@ void find(){
                         }
                         int q = 0;
                         int z = 0;
-                        printf("star is %d\n" , star);
                         if(star == 0){
                             for(int q = 0 ; q < at - 1 ; q++){
                                 jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
@@ -2813,6 +2823,7 @@ void replace(){
         scanf("%s" , option);
         if(strcmp(option , "all") == 0) find_flag = 1;
         else if(strcmp(option , "at") == 0) {scanf("%d" , &at);find_flag = 2;}
+        // printf("find flag is : %d\n" , find_flag);
         char c = getchar();
         if(c != '\n'){
             c = getchar();
@@ -2821,5 +2832,574 @@ void replace(){
                 return;
             }
         }
+        
     }
+    else{
+        char c = getchar();
+        if(c != '\n'){
+            char option[20];
+            scanf("%s" , option);
+            if(strcmp(option , "all") == 0) {find_flag = 1;dash = 1;}
+            else if(strcmp(option , "at") == 0) {scanf("%d" , &at);find_flag = 2;dash = 1;}
+            if(dash == 1){
+                char c = getchar();
+                if(c != '\n'){
+                    c = getchar();
+                    if(c == '-'){
+                        printf("This option can't be combined\n");
+                        return;
+                    }
+                }
+            }
+        }
+        
+    }
+    go_to_root();
+    for(int i = 0 ; i < len - 1 ; i++){
+        int x = chdir(dir2[i]);
+        if(x == 0){
+            chdir(dir2[i]);
+        }
+        else{
+            printf("invalid address\n");
+            return;
+        }
+    }
+    FILE * a;
+    FILE * fPtr; 
+    char undo_filenam[10000] = ".";
+    strcat(undo_filenam , dir2[len - 1]);
+    a = fopen(undo_filenam , "w");
+    fPtr = fopen(dir2[len - 1] , "r");
+    if(fPtr == NULL){
+        fclose(a);
+        fclose(fPtr);
+        printf("File does not exist\n");
+        return;
+    }
+    char fileChar = fgetc(fPtr);
+    while (fileChar != EOF)
+    {
+        fputc(fileChar,a);
+        fileChar = fgetc(fPtr);
+    }
+    fclose(a);
+    fclose(fPtr);
+    FILE * roya_jafari;
+
+    roya_jafari = fopen(dir2[len - 1] , "r");
+    if(roya_jafari == NULL){
+        printf("File doesn't exist\n");
+        return;
+    }
+    if(dash == 0){
+        fseek(roya_jafari, 0, SEEK_END); 
+        int size_of_file = ftell(roya_jafari); 
+        fseek(roya_jafari, 0, SEEK_SET); 
+        char *data = (char *)malloc(size_of_file*sizeof(int)); 
+        int char_file = 0;
+        char_file = fgetc(roya_jafari);
+        for(int j = 0 ; char_file != EOF ; j++){
+            data[j] = char_file;
+            char_file = fgetc(roya_jafari);
+        }
+        char *jaei_ke_behesh_mirese = strstr(data , matn);
+        if(jaei_ke_behesh_mirese == NULL){
+            printf("-1\n");
+            return;
+        }
+        int z = 0;
+        while(jaei_ke_behesh_mirese != NULL){
+            if(star1 == 0){
+                char *jaei_ke_behesh_mirese = strstr(data , matn);
+                break;
+            }
+            else if(star1 == 1){
+                if((*(jaei_ke_behesh_mirese - 1) != ' ' && *(jaei_ke_behesh_mirese - 1) != '\n' && *(jaei_ke_behesh_mirese - 1) != NULL) ){
+                    for(z = 0 ; *(jaei_ke_behesh_mirese - z) != ' ' && *(jaei_ke_behesh_mirese - z) != '\n' && *(jaei_ke_behesh_mirese - z) != NULL ; z++);
+                    z--;
+                    jaei_ke_behesh_mirese -= z;
+                    x += z;
+                    break;
+                }
+                if(jaei_ke_behesh_mirese == NULL){
+                    printf("-1\n");
+                    return;
+                }
+                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+            }
+            else if(star1 == 2){
+                if(*(jaei_ke_behesh_mirese + x) != ' ' && *(jaei_ke_behesh_mirese + x) != '\n' && *(jaei_ke_behesh_mirese + x) != EOF ){
+                    for(z = 0 ; *(jaei_ke_behesh_mirese + z) != ' ' && *(jaei_ke_behesh_mirese + z) != '\n' && *(jaei_ke_behesh_mirese + z) != EOF ; z++);
+                    z--;
+                    x += z;
+                    break;
+                }
+                if(jaei_ke_behesh_mirese == NULL){
+                    printf("-1\n");
+                    return;
+                }
+                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+            }
+        }
+        if(jaei_ke_behesh_mirese - data < 0){
+            printf("-1\n");
+            return;
+        }
+        int y = jaei_ke_behesh_mirese - data;
+        fseek(roya_jafari, 0, SEEK_SET); 
+        FILE * n;
+        n = fopen("n" , "w");
+        for(int v = 0 ; v < y ; v++){
+            char_file = fgetc(roya_jafari);
+            fputc(char_file , n);
+        }
+        for(int a = 0 ; matn2[a] != '\0' ; a++){
+            int x = matn2[a];
+            if(matn2[a] == '\\'){ 
+                if(matn2[a+1] == '\\'){ 
+                    if(matn2[a+2] == 'n') {
+                        fprintf(n , "\\n"); 
+                        a = a + 2;
+                    }
+                }
+                else if(matn2[a] == '\\') {
+                    if(matn2[a+1] == 'n') {
+                        int y = '\n';
+                        fputc(y , n);
+                        a = a + 1;
+                    }
+                }
+            }
+            else {
+                fputc(x , n);
+            }
+        }
+        for(int v = 0 ; v < x ; v++){
+            fgetc(roya_jafari);
+        }
+        char_file = fgetc(roya_jafari);
+        while(char_file != EOF){
+            fputc(char_file , n);
+            char_file = fgetc(roya_jafari);
+        }
+        fclose(n);
+        fclose(roya_jafari);
+        n = fopen("n" , "r");
+        roya_jafari = fopen(dir2[len - 1] , "w");
+        char_file = fgetc(n);
+        while(char_file != EOF){
+            fputc(char_file , roya_jafari);
+            char_file = fgetc(n);
+        }
+        fclose(n);
+        fclose(roya_jafari);
+        remove("n");
+        printf("succeful\n");
+    }
+    else if(dash == 1){
+        if(find_flag == 2){
+            go_to_root();
+            for(int i = 0 ; i < len - 1 ; i++){
+                int x = chdir(dir2[i]);
+                if(x == 0){
+                    chdir(dir2[i]);
+                }
+                else{
+                    printf("invalid address\n");
+                    return;
+                }
+            }
+            roya_jafari = fopen(dir2[len - 1] , "r");
+            fseek(roya_jafari, 0, SEEK_SET); 
+            if(roya_jafari == NULL){
+                printf("File doesn't exist\n");
+                return;
+            }
+            fseek(roya_jafari, 0, SEEK_END); 
+            int size_of_file = ftell(roya_jafari); 
+            fseek(roya_jafari, 0, SEEK_SET); 
+            char *y;
+            char *data = (char *)malloc(size_of_file*sizeof(int)); 
+            int char_file = 0;
+            char_file = fgetc(roya_jafari);
+            for(int j = 0 ; char_file != EOF ; j++){
+                data[j] = char_file;
+                char_file = fgetc(roya_jafari);
+            }
+            // printf("%s\n" , data);
+            fseek(roya_jafari, 0, SEEK_SET); 
+            char *jaei_ke_behesh_mirese = strstr(data , matn);
+            if(jaei_ke_behesh_mirese == NULL){
+                printf("-1\n");
+                return;
+            }
+            int q = 0;
+            int z = 0;
+            int f;
+            if(star1 == 0){
+                for(q = 0 ; q < at - 1; q++){
+                    jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                }
+                q ++;
+            }
+            else{
+                // jaei_ke_behesh_mirese = strstr(data , matn);
+                while(jaei_ke_behesh_mirese != NULL && q < at){
+                    if(star1 == 1){
+                        if((*(jaei_ke_behesh_mirese - 1) != ' ' && *(jaei_ke_behesh_mirese - 1) != '\n' && *(jaei_ke_behesh_mirese - 1) != NULL) ){
+                            for(z = 0 ; *(jaei_ke_behesh_mirese - z) != ' ' && *(jaei_ke_behesh_mirese - z) != '\n' && *(jaei_ke_behesh_mirese - z) != NULL ; z++);
+                            z--;
+                            jaei_ke_behesh_mirese -= z;
+                            x += z;
+                            q++;
+                            if(q == at) break;
+                        }
+                        if(jaei_ke_behesh_mirese == NULL){
+                            printf("-1\n");
+                            return;
+                        }
+                        jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                    }
+                    else if(star1 == 2){
+                        if(*(jaei_ke_behesh_mirese + x) != ' ' && *(jaei_ke_behesh_mirese + x) != '\n' && *(jaei_ke_behesh_mirese + x) != EOF ){
+                            q++;
+                            for(z = 0 ; *(jaei_ke_behesh_mirese + z) != ' ' && *(jaei_ke_behesh_mirese + z) != '\n' && *(jaei_ke_behesh_mirese + z) != EOF ; z++);
+                            z--;
+                            f = x + z;
+                            if(q == at) {
+                                x = f;
+                                break;
+                            }
+                        }
+                        if(jaei_ke_behesh_mirese == NULL){
+                            printf("-1\n");
+                            return;
+                        }
+                        jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+                    }
+                }
+            }
+            if(jaei_ke_behesh_mirese - data < 0 || q != at){
+                printf("-1\n");
+                return;
+            }
+
+            int t = jaei_ke_behesh_mirese - data;
+            printf("t is : %d\n" , t);
+            printf("x is : %d\n" , x);
+
+            fseek(roya_jafari, 0, SEEK_SET); 
+            FILE * n;
+            n = fopen("n" , "w");
+            for(int v = 0 ; v < t ; v++){
+                char_file = fgetc(roya_jafari);
+                fputc(char_file , n);
+            }
+            for(int a = 0 ; matn2[a] != '\0' ; a++){
+                int x = matn2[a];
+                if(matn2[a] == '\\'){ 
+                    if(matn2[a+1] == '\\'){ 
+                        if(matn2[a+2] == 'n') {
+                            fprintf(n , "\\n"); 
+                            a = a + 2;
+                        }
+                    }
+                    else if(matn2[a] == '\\') {
+                        if(matn2[a+1] == 'n') {
+                            int y = '\n';
+                            fputc(y , n);
+                            a = a + 1;
+                        }
+                    }
+                }
+                else {
+                    fputc(x , n);
+                }
+            }
+            for(int v = 0 ; v < x ; v++){
+                fgetc(roya_jafari);
+            }
+            char_file = fgetc(roya_jafari);
+            while(char_file != EOF){
+                fputc(char_file , n);
+                char_file = fgetc(roya_jafari);
+            }
+            fclose(n);
+            fclose(roya_jafari);
+            n = fopen("n" , "r");
+            roya_jafari = fopen(dir2[len - 1] , "w");
+            char_file = fgetc(n);
+            while(char_file != EOF){
+                fputc(char_file , roya_jafari);
+                char_file = fgetc(n);
+            }
+            fclose(n);
+            fclose(roya_jafari);
+            remove("n");
+            printf("succeful\n");
+        }
+    }
+    if(find_flag == 1){
+        // printf("find flag is%d\n" , find_flag);
+        go_to_root();
+        for(int i = 0 ; i < len - 1 ; i++){
+            int x = chdir(dir2[i]);
+            if(x == 0){
+                chdir(dir2[i]);
+            }
+            else{
+                printf("invalid address\n");
+                return;
+            }
+            }
+            FILE * roya_jafari;
+            roya_jafari = fopen(dir2[len - 1] , "r");
+            if(roya_jafari == NULL){
+                printf("File doesn't exist\n");
+                return;
+            }
+            fseek(roya_jafari, 0, SEEK_END); 
+            int size_of_file = ftell(roya_jafari); 
+            fseek(roya_jafari, 0, SEEK_SET); 
+            char *y;
+            char *data = (char *)malloc(size_of_file*sizeof(int)); 
+            int char_file = 0;
+            char_file = fgetc(roya_jafari);
+            for(int j = 0 ; char_file != EOF ; j++){
+                data[j] = char_file;
+                char_file = fgetc(roya_jafari);
+            }
+            // printf("%s\n" , data);
+            char *jaei_ke_behesh_mirese = strstr(data , matn);
+            if(jaei_ke_behesh_mirese == NULL){
+                printf("-1\n");
+                return;
+            }
+            int a = 0;
+            int s = 0;
+            int z = 0;
+            int f = x;
+            printf("inja?\n");
+            while(jaei_ke_behesh_mirese != NULL){
+            if(star1 == 0){
+                if(star1 == 0 || star1 == 1){
+                    for(z = 0 ; *(jaei_ke_behesh_mirese - z) != ' ' && *(jaei_ke_behesh_mirese - z) != '\n' && *(jaei_ke_behesh_mirese - z) != NULL ; z++);
+                    z--;
+                }
+                int t = jaei_ke_behesh_mirese - data;
+                fseek(roya_jafari, 0, SEEK_SET); 
+                FILE * n;
+                n = fopen("n" , "w");
+                for(int v = 0 ; v < t ; v++){
+                    char_file = fgetc(roya_jafari);
+                    fputc(char_file , n);
+                }
+                for(int a = 0 ; matn2[a] != '\0' ; a++){
+                    int x = matn2[a];
+                    if(matn2[a] == '\\'){ 
+                        if(matn2[a+1] == '\\'){ 
+                            if(matn2[a+2] == 'n') {
+                                fprintf(n , "\\n"); 
+                                a = a + 2;
+                            }
+                        }
+                        else if(matn2[a] == '\\') {
+                            if(matn2[a+1] == 'n') {
+                                int y = '\n';
+                                fputc(y , n);
+                                a = a + 1;
+                            }
+                        }
+                    }
+                    else {
+                        fputc(x , n);
+                    }
+                }
+                for(int v = 0 ; v < x ; v++){
+                    fgetc(roya_jafari);
+                }
+                char_file = fgetc(roya_jafari);
+                while(char_file != EOF){
+                    fputc(char_file , n);
+                    char_file = fgetc(roya_jafari);
+                }
+                fclose(n);
+                fclose(roya_jafari);
+                n = fopen("n" , "r");
+                roya_jafari = fopen(dir2[len - 1] , "w");
+                char_file = fgetc(n);
+                while(char_file != EOF){
+                    fputc(char_file , roya_jafari);
+                    char_file = fgetc(n);
+                }
+                fclose(n);
+                fclose(roya_jafari);
+                remove("n");
+                // printf("succeful\n");
+            
+                s = 1;
+                if(jaei_ke_behesh_mirese == NULL){
+                    if(s == 0){
+                        printf("-1\n");
+                    }
+                    return;
+                }
+                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+            }
+            else if(star1 == 1){
+                if((*(jaei_ke_behesh_mirese - 1) != ' ' && *(jaei_ke_behesh_mirese - 1) != '\n' && *(jaei_ke_behesh_mirese - 1) != NULL) ){
+                    for(z = 0 ; *(jaei_ke_behesh_mirese - z) != ' ' && *(jaei_ke_behesh_mirese - z) != '\n' && *(jaei_ke_behesh_mirese - z) != NULL ; z++);
+                    z--;
+                    jaei_ke_behesh_mirese -= z;
+                    x += z;
+                    int t = jaei_ke_behesh_mirese - data;
+                    fseek(roya_jafari, 0, SEEK_SET); 
+                    FILE * n;
+                    n = fopen("n" , "w");
+                    for(int v = 0 ; v < t ; v++){
+                        char_file = fgetc(roya_jafari);
+                        fputc(char_file , n);
+                    }
+                    for(int a = 0 ; matn2[a] != '\0' ; a++){
+                        int x = matn2[a];
+                        if(matn2[a] == '\\'){ 
+                            if(matn2[a+1] == '\\'){ 
+                                if(matn2[a+2] == 'n') {
+                                    fprintf(n , "\\n"); 
+                                    a = a + 2;
+                                }
+                            }
+                            else if(matn2[a] == '\\') {
+                                if(matn2[a+1] == 'n') {
+                                    int y = '\n';
+                                    fputc(y , n);
+                                    a = a + 1;
+                                }
+                            }
+                        }
+                        else {
+                            fputc(x , n);
+                        }
+                    }
+                    for(int v = 0 ; v < x ; v++){
+                        fgetc(roya_jafari);
+                    }
+                    char_file = fgetc(roya_jafari);
+                    while(char_file != EOF){
+                        fputc(char_file , n);
+                        char_file = fgetc(roya_jafari);
+                    }
+                    fclose(n);
+                    fclose(roya_jafari);
+                    n = fopen("n" , "r");
+                    roya_jafari = fopen(dir2[len - 1] , "w");
+                    char_file = fgetc(n);
+                    while(char_file != EOF){
+                        fputc(char_file , roya_jafari);
+                        char_file = fgetc(n);
+                    }
+                    fclose(n);
+                    fclose(roya_jafari);
+                    remove("n");
+                    s = 1;
+                }
+                if(jaei_ke_behesh_mirese == NULL){
+                    if(s == 0){
+                        printf("-1\n");
+                    }
+                    return;
+                }
+                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+            }
+            else if(star1 == 2){
+                if(*(jaei_ke_behesh_mirese + x) != ' ' && *(jaei_ke_behesh_mirese + x) != '\n' && *(jaei_ke_behesh_mirese + x) != EOF ){
+                    for(z = 0 ; *(jaei_ke_behesh_mirese + z) != ' ' && *(jaei_ke_behesh_mirese + z) != '\n' && *(jaei_ke_behesh_mirese + z) != EOF ; z++);
+                    z--;
+                    z--;
+                    if(jaei_ke_behesh_mirese - data < 0){
+                        return;
+                    }
+                    printf("x is : %d" , x);
+                    x += z;
+                    printf("x is : %d" , x);
+                    int t = jaei_ke_behesh_mirese - data;
+                    printf("t is : %d\n" , t);
+                    fseek(roya_jafari, 0, SEEK_SET); 
+                    FILE * n;
+                    n = fopen("n" , "w");
+                    for(int v = 0 ; v < t ; v++){
+                        char_file = fgetc(roya_jafari);
+                        fputc(char_file , n);
+                    }
+                    for(int a = 0 ; matn2[a] != '\0' ; a++){
+                        int s = matn2[a];
+                        if(matn2[a] == '\\'){ 
+                            if(matn2[a+1] == '\\'){ 
+                                if(matn2[a+2] == 'n') {
+                                    fprintf(n , "\\n"); 
+                                    a = a + 2;
+                                }
+                            }
+                            else if(matn2[a] == '\\') {
+                                if(matn2[a+1] == 'n') {
+                                    int y = '\n';
+                                    fputc(y , n);
+                                    a = a + 1;
+                                }
+                            }
+                        }
+                        else {
+                            // printf("x is %c\n" , s);
+                            fputc(s , n);
+                        }
+                    }
+                    printf("\n\n\n");
+                    for(int v = 0 ; v < x ; v++){
+                        fgetc(roya_jafari);
+                    }
+                    char_file = fgetc(roya_jafari);
+                    while(char_file != EOF){
+                        fputc(char_file , n);
+                        char_file = fgetc(roya_jafari);
+                    }
+                    fclose(n);
+                    fclose(roya_jafari);
+                    n = fopen("n" , "r");
+                    roya_jafari = fopen(dir2[len - 1] , "w");
+                    char_file = fgetc(n);
+                    while(char_file != EOF){
+                        printf("char is %c\n" , char_file);
+                        fputc(char_file , roya_jafari);
+                        char_file = fgetc(n);
+                    }
+                    fclose(n);
+                    fclose(roya_jafari);
+                    // remove("n");
+                    s = 1;
+                }
+                if(jaei_ke_behesh_mirese == NULL){
+                    if(s == 0){
+                        printf("-1\n");
+                    }
+                    return;
+                }
+                // if(a > 1)
+                //     return;
+                // a++;
+                z = 0;
+                x = f;
+                jaei_ke_behesh_mirese = strstr(jaei_ke_behesh_mirese+1 , matn);
+            }
+        }
+        if(jaei_ke_behesh_mirese - data < 0){
+            if(s == 0){
+                printf("-1\n");
+            }
+            return;
+        }
+        printf("successful\n");
+        
+    }
+
 }
