@@ -30,20 +30,20 @@ sudo cp project-vim /usr/local/bin
 
 4. Open Vim and use the following commands to utilize the features provided by this utility:
 
--replace            = replace an string of a file with another string
--grep               = print lines of files which contain an string
--tree               = show directories and files of a folder
--compare            = compare lines of two given files
--find               = find an string in a file
--cat                = print what is in a file
--auto_indent        = closing pairs
--createfile         = create a file
--insert             = insert a file
--remove
--copy
--cut
--paste
--undo
+- replace            = replace an string of a file with another string
+- grep               = print lines of files which contain an string
+- tree               = show directories and files of a folder
+- compare            = compare lines of two given files
+- find               = find an string in a file
+- cat                = print what is in a file
+- auto_indent        = closing pairs
+- createfile         = create a file
+- insert             = insert a file
+- remove
+- copy
+- cut
+- paste
+- undo
 
 For detailed usage instructions and examples, refer to the PDF file included in this repository.
 
